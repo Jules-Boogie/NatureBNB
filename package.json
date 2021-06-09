@@ -1,0 +1,17 @@
+{
+  "name": "natureexp",
+  "version": "1.0.0",
+  "description": "none",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon server.js"
+  },
+  "author": "Juliet George",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "mongoose": "^5.12.13",
+    "morgan": "^1.10.0"
+  }
+}
