@@ -1,8 +1,7 @@
 const expModel = require('../models/expModel');
+const APIFeatures = require('../Utils/apiFeatures')
 
-// const exps = JSON.parse(
-//   fs.readFileSync(`${__dirname}/../dev-data/data/exps-simple.json`)
-// );
+
 const regions = [
   'North America',
   'Europe',
@@ -11,6 +10,7 @@ const regions = [
   'South America',
 ];
 const interest = ['Culinary', 'Active', 'Cultural', 'Animals', 'Boating'];
+
 
 const expController = {
   //middlewares
@@ -32,43 +32,13 @@ const expController = {
 
   async getHandler(req, res) {
     try {
-      const exclude = ['sort', 'limit', 'fields', 'page'];
-      const queryObj = { ...req.query };
-      exclude.forEach((el) => delete queryObj[el]);
-      let queryStr = JSON.stringify(queryObj);
-      queryStr = queryStr.replace(
-        /\b(gte|gt|lt|lte)\b/g,
-        (match) => `$${match}`
-      );
+      const features = new APIFeatures(expModel.find(),req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .paginate();
 
-      let query = expModel.find(JSON.parse(queryStr));
-
-      if ('sort' in req.query) {
-        const sortBy = req.query.sort.split(',').join(' ');
-        query.sort(sortBy);
-      } else {
-        query.sort('-createdAt');
-      }
-
-      if ('fields' in req.query) {
-        const fieldStr = req.query.fields.split(',').join(' ');
-        query.select(fieldStr);
-      } else {
-        query.select('-__v');
-      }
-
-      const page = req.query.page * 1 || 1;
-      const limit = req.query.limit * 1 || 20;
-      const skip = (page - 1) * limit;
-      query.skip(skip).limit(limit);
-
-      if (req.query.page) {
-        const documentCount = await expModel.countDocuments();
-        if (skip >= documentCount) {
-          throw new Error('Page does not exist');
-        }
-      }
-      const expsAll = await query;
+      const expsAll = await features.query;
 
       res.status(200).json({
         status: 'success',
@@ -151,6 +121,7 @@ const expController = {
       });
     }
   },
+
 };
 
 module.exports = expController;
