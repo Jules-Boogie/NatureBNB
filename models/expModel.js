@@ -14,6 +14,15 @@ const expSchema = new mongoose.Schema({
     type: Number,
     required: [true, 'an experience must have a price'],
   },
+  priceDiscount:{
+    type: Number,
+    validate:{
+      validator:function(val){
+        return val < this.price;
+      },
+      message:"Discounted Price {{VALUE}} should be less that regulat Price "
+    }
+  },
   description: {
     type: String,
     trim: true,
