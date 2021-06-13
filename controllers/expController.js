@@ -29,7 +29,7 @@ const expController = {
       'name,price,ratingsAverage,summary,difficulty,imageCover';
     next();
   },
-
+  
   async getHandler(req, res) {
     try {
       const features = new APIFeatures(expModel.find(),req.query)
