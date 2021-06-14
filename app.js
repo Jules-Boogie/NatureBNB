@@ -1,6 +1,8 @@
 const express = require('express');
 const fs = require('fs');
 const morgan = require('morgan');
+const AppError = require("./Utils/appError");
+const errorController = require("./controllers/errorController")
 
 const app = express();
 if (process.env.NODE_ENV == 'development') {
@@ -21,5 +23,9 @@ const expRouter = require('./routes/expRoutes');
 
 app.use('/api/v1/exps', expRouter);
 app.use('/api/v1/users', userRouter);
+app.all('*', (req,res,next)=>{
+next(new AppError(`Can't find ${req.originalUrl} on this server`,404))
+})
 
+app.use(errorController)
 module.exports = app;
