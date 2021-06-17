@@ -1,9 +1,18 @@
+const User = require("../models/userModel");
+const catchAsync = require("../Utils/catchAsync");
+
 const userController =  {
-     getUsersHandler (req, res)  {
-        res.status(500).json({
-          status: 'error',
-        });
-      },
+     getUsersHandler: catchAsync(async (req, res) => {
+      const usersAll = await User.find();
+
+      res.status(200).json({
+        status: 'success',
+        requestedAt: req.requestedTime,
+        results: usersAll.length,
+        data: usersAll,
+      });
+
+      }),
       
        postUserHandler (req, res) {},
       

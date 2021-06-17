@@ -22,6 +22,7 @@ const userSchema = mongoose.Schema({
     minLength: 8,
     maxLength: 20,
     trim: true,
+    select: false,
   },
 
   passwordConfirm: {
@@ -36,12 +37,17 @@ const userSchema = mongoose.Schema({
   },
 });
 
+userSchema.method.verifyPassword = function (incomingPassword, userPassword) {
+  return bcrypt.compare(incomingPassword, userPassword);
+};
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return;
   this.password = bcrypt.hash(this.password, 12);
   this.passwordConfirm = undefined;
   next();
 });
+
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;

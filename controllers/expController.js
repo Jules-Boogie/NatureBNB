@@ -1,7 +1,8 @@
 const expModel = require('../models/expModel');
 const APIFeatures = require('../Utils/apiFeatures');
 const catchAsync = require('../Utils/catchAsync');
-const AppError = require("../Utils/appError")
+const AppError = require("../Utils/appError");
+
 
 const regions = [
   'North America',
