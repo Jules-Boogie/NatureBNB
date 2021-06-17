@@ -1,6 +1,7 @@
 const expModel = require('../models/expModel');
-const APIFeatures = require('../Utils/apiFeatures')
-
+const APIFeatures = require('../Utils/apiFeatures');
+const catchAsync = require('../Utils/catchAsync');
+const AppError = require("../Utils/appError")
 
 const regions = [
   'North America',
@@ -30,14 +31,12 @@ const expController = {
     next();
   },
   
-  async getHandler(req, res) {
-    try {
+  getHandler: catchAsync(async(req, res,next) => {
       const features = new APIFeatures(expModel.find(),req.query)
       .filter()
       .sort()
       .limitFields()
       .paginate();
-
       const expsAll = await features.query;
 
       res.status(200).json({
@@ -46,82 +45,62 @@ const expController = {
         results: expsAll.length,
         data: expsAll,
       });
-    } catch (err) {
-      res.status(404).json({
-        status: 'bad request',
-        message: err,
-      });
-    }
-  },
 
-  async getOneHandler(req, res) {
-    try {
+  })
+  ,
+  getOneHandler: catchAsync(async (req, res) =>{
+
       const exp = await expModel.findById(req.params.id);
+      if(!exp){
+        return next(new AppError("No tour with that ID found",404))
+      }
       res.status(200).json({
         status: 'success',
         requestedAt: req.requestedTime,
         results: 1,
         data: exp,
       });
-    } catch (err) {
-      res.status(404).json({
-        status: 'bad request',
-        message: err,
-      });
     }
-  },
+  ),
 
-  async postHandler(req, res) {
-    try {
+  postHandler: catchAsync(async (req, res,next)=> {
       const newExp = await expModel.create(req.body);
       res.status(201).json({
         status: 'created',
         results: newExp.length,
         data: { newExp },
       });
-    } catch (err) {
-      res.status(400).json({
-        status: 'Bad request',
-        message: err,
-      });
-    }
-  },
+  }),
 
-  async updateHandler(req, res) {
-    try {
+  updateHandler: catchAsync(async (req, res, next)=> {
       const exp = await expModel.findByIdAndUpdate(req.param.id, req.body, {
         new: true,
         runValidators: true,
       });
+      if(!exp){
+        return next(new AppError("No tour with that ID found",404))
+      }
       res.status(201).json({
         status: 'success',
         data: {
           exp,
         },
       });
-    } catch (err) {
-      res.status(404).json({
-        status: 'Bad request',
-        message: err,
-      });
-    }
-  },
+  }),
 
-  async deleteHandler(req, res) {
-    try {
-      await expModel.findOneAndDelete({ _id: req.params.id });
+  deleteHandler: catchAsync(async (req, res,next)=>{
+
+      const exp = await expModel.findOneAndDelete({ _id: req.params.id });
+      if(!exp){
+        return next(new AppError("No tour with that ID found",404))
+      }
       res.status(204).json({
         status: 'no response',
         data: null,
       });
-    } catch (err) {
-      res.status(404).json({
-        status: 'Bad Request',
-        message: err,
-      });
-    }
-  },
 
-};
+  }
+),
+}
 
 module.exports = expController;
