@@ -37,7 +37,7 @@ const userSchema = mongoose.Schema({
   },
 });
 
-userSchema.method.verifyPassword = function (incomingPassword, userPassword) {
+userSchema.methods.verifyPassword = function (incomingPassword, userPassword) {
   return bcrypt.compare(incomingPassword, userPassword);
 };
 

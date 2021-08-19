@@ -3,6 +3,11 @@ const User = require('../models/userModel');
 const catchAsync = require('../Utils/catchAsync');
 const AppError = require('../Utils/appError');
 
+const signToken = (user) => {
+  jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
 const authController = {
   protect: catchAsync(async (req, res, next) => {
     let token;
@@ -15,7 +20,7 @@ const authController = {
     if (!token) {
       return next(new AppError('Please sign in to access', 401));
     }
-    next()
+    next();
   }),
   signup: catchAsync(async (req, res, next) => {
     const user = await User.create({
@@ -25,9 +30,7 @@ const authController = {
       passwordConfirm: req.body.passwordConfirm,
     });
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: process.env.JWT_EXPIRES_IN,
-    });
+    const token = signToken(user);
     res.status(201).json({
       status: 'success',
       token: token,
@@ -44,6 +47,8 @@ const authController = {
     if (!user || !(await user.verifyPassword(password, user.password))) {
       return next(new AppError('Incorrect email or password', 404));
     }
+
+    const token = signToken(user);
 
     res.status(200).json({
       status: 'success',

@@ -8,6 +8,7 @@ const DB = process.env.MONGO_CONNECTION.replace(
   '<PASSWORD>',
   process.env.DATABASE_PASSWORD
 );
+
 process.on('uncaughtException', (err) => {
   server.close(() => {
     process.exit(1);
@@ -29,6 +30,7 @@ const server = app.listen(port, () => {
   console.log('app running on port ' + port);
 });
 
+// handles unhandled Promise Rejection outside of express server
 process.on('unhandledRejection', (err) => {
   server.close(() => {
     process.exit(1);
