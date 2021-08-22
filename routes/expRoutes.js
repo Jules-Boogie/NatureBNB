@@ -1,6 +1,6 @@
 const express = require('express');
 const expController = require('../controllers/expController');
-const authController = require("../controllers/authController");
+const authController = require('../controllers/authController');
 
 const Router = express.Router();
 
@@ -16,11 +16,17 @@ Router.route('/top-20-rated').get(
   expController.getHandler
 );
 
-Router.route('/').get(authController.protect, expController.getHandler).post(expController.postHandler);
+Router.route('/')
+  .get(authController.protect, expController.getHandler)
+  .post(expController.postHandler);
 
 Router.route('/:id')
   .get(expController.getOneHandler)
   .patch(expController.updateHandler)
-  .delete(expController.deleteHandler);
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'lead-guide'),
+    expController.deleteHandler
+  );
 
 module.exports = Router;
