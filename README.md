@@ -1,7 +1,5 @@
 # NatureBNB
- A clone of  AirBnB's adventure page. 
- 
- I am still developing the model and controller but will move to the view soon.
+ An Expressjs API with authentication, authorization, payments, file uploads, and email. Data is persisted in MongoDB. 
 
 ## User Model
 ```
