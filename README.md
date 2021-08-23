@@ -1,4 +1,4 @@
-# NatureBNB
+# Nature Experiences
  An Expressjs API with authentication, authorization, payments, file uploads, and email. Data is persisted in MongoDB. 
 
 ## User Model
